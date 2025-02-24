@@ -89,6 +89,7 @@ message EstopSystemStatus {
     string stop_level_details = 5;
 }
 
+
 // Client request for setting/maintaining an E-Stop system level.
 // After the first CheckIn, must include response to previous challenge.
 message EstopCheckInRequest {
@@ -202,7 +203,7 @@ message DeregisterEstopEndpointRequest {
 
 // Response to E-Stop endpoint  deregistration request.
 message DeregisterEstopEndpointResponse {
-    // Common response header.
+    // Common resonse header.
     ResponseHeader header = 1;
 
     // Copy of the initial request.

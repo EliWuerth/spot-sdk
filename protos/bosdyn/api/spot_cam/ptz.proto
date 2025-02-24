@@ -7,7 +7,6 @@
 syntax = "proto3";
 
 package bosdyn.api.spot_cam;
-option go_package = "bosdyn/api/spot_cam/ptz";
 
 option java_outer_classname = "PtzProto";
 

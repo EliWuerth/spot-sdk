@@ -33,6 +33,7 @@ Developers getting acquainted with the SDK may find it easier to start with cert
 
 ### Advanced Examples
 
+- [Spot Detect and Follow](spot_detect_and_follow/README.md)
 - [Mission Recorder](mission_recorder/README.md)
 - [Xbox Controller](xbox_controller/README.md)
 

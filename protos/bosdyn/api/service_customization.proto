@@ -34,7 +34,7 @@ message CustomParam {
         // Type and type-specific specifications of this parameter.
         oneof spec {
             // This parameter is actually a set of sub-parameters.
-            // Useful for setting up a parameter hierarchy, e.g.
+            // Useful for setting up a paramter hierarchy, e.g.
             //           param A
             //          /       \
             //         /         \
@@ -68,7 +68,7 @@ message CustomParam {
 message UserInterfaceInfo {
     // This string is an optional display name for the UI.  If left unset, UI will use the
     // DictParam key to label the corresponding UI element.  DictParam key is meant to be
-    // machine readable, and shouldn't change across releases.  display_name is meant to be
+    // machine readable, and shouldn't change accross releases.  display_name is meant to be
     // human readable, and can change from release to release if needed.
     string display_name = 1;
 
@@ -117,11 +117,11 @@ message DictParam {
 //
 // Example 1 - A camera that advertises an "exposure" parameter:
 //      OneOf Option 1: Auto exposure [no additional parameters]
-//      OneOf Option 2: Manual exposure [additional exposure double parameter from 0 - 100 ms]
+//      OneOf Option 2: Manual exposure [additonal exposure double parameter from 0 - 100 ms]
 //
 // Example 2 - A NCB worker that will alert if temperature outside a specified bound:
 //      OneOf Option 1: No alert [no additional parameters]
-//      OneOf Option 2: Alert if above max [additional max_temp parameter]
+//      OneOf Option 2: Alert if above max [addional max_temp parameter]
 //      OneOf Option 3: Alert if below min [additional min_temp parameter]
 //      OneOf Option 4: Alert if above max or below min [additional max_temp and min_temp
 //      parameters]
@@ -193,7 +193,6 @@ message Int64Param {
         // ERROR: It is an error to specify a min_value larger than the max_value.
         google.protobuf.Int64Value min_value = 4;
         google.protobuf.Int64Value max_value = 5;
-
     }
 
     // Value should be provided in the same units as defined by the spec.
@@ -218,7 +217,6 @@ message DoubleParam {
         // ERROR: It is an error to specify a min_value larger than the max_value.
         google.protobuf.DoubleValue min_value = 4;
         google.protobuf.DoubleValue max_value = 5;
-
     }
 
     // Value should be provided in the same units as defined by the spec.
@@ -229,7 +227,6 @@ message DoubleParam {
 // Wraps specification-related messages, and contains fields for the value sent by a client.
 message StringParam {
     message Spec {
-
         // A value sent by the client must be equal to one of these.
         repeated string options = 1;
 
@@ -242,10 +239,6 @@ message StringParam {
         // Default value. If empty, UIs can pick their own default OR force user to make a
         // selection.
         string default_value = 3;
-
-
-        // A hint to the UI to use a textarea / multiline EditText.
-        bool is_multiline = 5;
     }
 
     // The value sent by a client.
@@ -258,7 +251,6 @@ message BoolParam {
         // Default value. If unset, UIs can pick their own default OR force user to make a
         // selection.
         google.protobuf.BoolValue default_value = 1;
-
     }
 
     // The value sent by a client.
@@ -277,7 +269,7 @@ message RegionOfInterestParam {
         //   - Image services
         //   - Network compute bridge workers that accept a single image
         //
-        // Other times, it might not be clear which image an ROI is supposed to reference.  In those
+        // Othertimes, it might not be clear which image an ROI is supposed to reference.  In those
         // cases, the Spec for the ROI can advertise which image it wants.
         ServiceAndSource service_and_source = 1;
 
@@ -285,8 +277,8 @@ message RegionOfInterestParam {
         // selection.
         AreaI default_area = 2;
 
-        // Area may eventually contain many shape primitives.  In that case, services can constrain
-        // which primitives they accept.  These will be opt in, so that adding new primitive types
+        // Area may eventually contain many shape primatives.  In that case, services can constrain
+        // which primatives they accept.  These will be opt in, so that adding new primative types
         // won't be automatically advertised by older services.
         bool allows_rectangle = 3;
     }
@@ -332,4 +324,5 @@ message CustomParamError {
 
     // List of error messages from this parameter and its children
     repeated string error_messages = 5;
+
 }

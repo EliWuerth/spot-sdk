@@ -17,3 +17,4 @@ service PayloadService {
     // List all payloads the robot knows about.
     rpc ListPayloads(ListPayloadsRequest) returns (ListPayloadsResponse);
 }
+

@@ -19,7 +19,7 @@ The purpose of computation payloads is to run custom software applications on th
 
 1. Implement and test application in a development environment, such as a development computer. In this case, the development computer connected to Spot's WiFi acts as the computation payload for the robot. Testing in the development environment allows for quick iterations and updating of the application code.
 2. Dockerize the application and test the docker image with the application on the development environment. The change in this step compared to the previous one is to run the application inside a docker container, rather than on the host OS of the development environment. This step verifies that the application works correctly in a containerized environment, and it acts as a stepping stone to the final step below. The section [Create Docker Images](#create-docker-images) described how to create and test the docker images in the local development environment.
-3. If targeting the CORE I/O payload, combine all docker containers with a docker-compose configuration file and package everything into a Spot Extension, as described in the [Manage Payload Software in CORE I/O](#manage-payload-software-in-core-i-o) section.
+3. If targetting the CORE I/O payload, combine all docker containers with a docker-compose configuration file and package everything into a Spot Extension, as described in the [Manage Payload Software in CORE I/O](#manage-payload-software-in-core-i-o) section.
 4. Deploy and manage the Spot Extension in the CORE I/O payload (also described in the section linked above). Running the dockerized application on a computation payload attached to Spot removes the need for WiFi connectivity between Spot and a stationary computation environment, improving Spot's autonomy.
 
 To manage the docker images on any other compute payload, please refer to the [Command-line Configuration](#command-line-configuration) section.
@@ -28,6 +28,7 @@ Multiple Spot SDK examples support dockerization and running as docker container
 
 - [Data Acquisition Plugins](../../python/examples/data_acquisition_service/README.md)
 - [Ricoh Theta](../../python/examples/ricoh_theta/README.md)
+- [Spot Detect and Follow](../../python/examples/spot_detect_and_follow/README.md)
 - [Custom Parameter Web Cam Image Service](../../python/examples/service_customization/custom_parameter_image_server/README.md)
 
 ## Installing Docker Engine
@@ -42,12 +43,7 @@ After implementing and testing the application on the development environment, t
 
 The `Dockerfile` files in the SDK examples contain instructions to create x86/AMD-based Ubuntu docker images. On top of `Dockerfile` files, SDK examples also contain `Dockerfile.l4t` for creating ARM-based Ubuntu docker images for the CORE I/O payloads.
 
-When writing Dockerfiles for images targeted for the CORE I/O, if using [Nvidia Docker images](https://catalog.ngc.nvidia.com/containers?filters=&orderBy=scoreDESC&query=l4t) as a base, ensure that the tag matches the version of Jetpack running on the CORE I/O:
-
-| CORE I/O Version     | JetPack Version             |
-| -------------------- | --------------------------- |
-| >= 4.0.0             | JetPack 5.1.2 (L4T R35.4.1) |
-| >= 3.3.0 and < 4.0.0 | JetPack 4.6.1 (L4T R32.7.1) |
+When writing Dockerfiles for images targeted for the CORE I/O, if using [Nvidia Docker images](https://catalog.ngc.nvidia.com/containers?filters=&orderBy=scoreDESC&query=l4t) as a base, ensure that the tag matches the version of Jetpack running on the CORE I/O. As of 3.3.0, the CORE I/O is running JetPack 4.6.1 (L4T R32.7.1).
 
 **Note:** OpenCV is commonly used for processing image data on the CORE I/O. By Default, most installations of OpenCV do not have CUDA support. Nvidia's [l4t-ml](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/l4t-ml) container provides a version of OpenCV with CUDA support built-in, but is also fairly large. To build a more lightweight container with CUDA support in OpenCV, follow the instructions provided [here](https://github.com/dusty-nv/jetson-containers/blob/93c5b397f8daeeb9218ba49acefc23f4ad19965f/Dockerfile.opencv), replacing `BASE_IMAGE` and `OPENCV_VERSION` with the desired versions (see above).
 
@@ -124,7 +120,7 @@ sudo docker run -it --platform linux/arm64 --network=host {IMAGE_NAME} {ROBOT_IP
 
 ### Ports For Incoming Traffic
 
-Both the CORE I/O and the Orbit platforms uses firewall rules that control the ports on which incoming traffic is allowed. If a custom application needs to open a port for incoming traffic, for example when hosting a server that external clients can connect to, it must choose a port from within the port ranges below. Docker's host networking mode is used to simplify networking and allow deployed containers to communicate with each other. The port ranges below are allowed to accept incoming traffic on the host networking stack.
+Both the CORE I/O and the Scout platforms uses firewall rules that control the ports on which incoming traffic is allowed. If a custom application needs to open a port for incoming traffic, for example when hosting a server that external clients can connect to, it must choose a port from within the port ranges below. Docker's host networking mode is used to simplify networking and allow deployed containers to communicate with each other. The port ranges below are allowed to accept incoming traffic on the host networking stack.
 
 ```
 Allowed Port Ranges
@@ -139,11 +135,11 @@ This section describes two ways to manage docker containers on a computation pay
 
 ### CORE I/O Extensions Configuration
 
-Extensions are software packages or static files introduced in 3.2 that can be installed or simply uploaded in CORE I/O or Orbit platforms.
+Extensions are software packages or static files introduced in 3.2 that can be installed or simply uploaded in CORE I/O or Scout platforms.
 
-Configured as software packages, Extensions provide the functionality for external developers to easily install applications onto CORE I/O and Orbit platforms. On the CORE I/O, these software packages can integrate a newly-mounted payload with the Spot API, or not be associated with any payload functionality at all, such as uploading data to an AWS bucket.
+Configured as software packages, Extensions provide the functionality for external developers to easily install applications onto CORE I/O and Scout platforms. On the CORE I/O, these software packages can integrate a newly-mounted payload with the Spot API, or not be associated with any payload functionality at all, such as uploading data to an AWS bucket.
 
-Extensions can also simply be static files that developers need to upload into CORE I/O or Orbit platform. This configuration supports two important use cases:
+Extensions can also simply be static files that developers need to upload into CORE I/O or Scout platform. This configuration supports two important use cases:
 
 1. It allows the developers to split their Extensions into a smaller Extension with the software components that needs to be updated frequently and one or more larger Extensions with static files needed by the Extension with the software component. This configuration simplifies the process of updating Extensions by decoupling static large files from the frequently-updatable files and installing them once, or less frequently.
 2. It allows the developers to split their Extensions into a generic software package that is identical for all customers, and separate Extensions with configuration files that are applicable to one of a subset of customers. This configuration simplifies the process of installing customer-specific Extensions by maintaining the common part of the package in one Extension and the customer-specific configuration in another Extension.
@@ -163,18 +159,7 @@ An Extension is a set of docker images configured with a docker-compose yaml con
 - Udev rules file to install in the CORE I/O OS if the Extension is associated with a hardware payload to be attached to CORE I/O.
 - Other files needed by the software or the udev rules included in the Extension
 
-If populated, the `extension_name` field in `manifest.json` represents the name of the extension. Otherwise, the name of the spx file represents the name of the extension. The name of the extension is subject to the following restrictions:
-
-- Can only contain letters (a-z, A-Z), numbers (0-9), hyphens (-), and underscores (\_)
-- Cannot contain the special strings, `coreio` and `mission_control`
-
-Please note that these restrictions do not apply to the Extension filename when `extension_name` is populated.
-
-One known issue in CORE I/O version 4.1.0 is that Extensions with names that violate the naming requirements cannot be uninstalled through the web portal. To resolve this, you can use one of the following workarounds (be sure to back anything up you are not confident you have stored elsewhere prior to deleting it on the CORE I/O):
-
-- **Before upgrading to CORE I/O version 4.1.0**: Uninstall the affected Extensions. Then, update the Extension's name (as specified in the `extension_name` field in `manifest.json`) or its filename. After upgrading to CORE I/O version 4.1.0, reinstall the updated Extension.
-- **Using SSH**: Connect to the CORE I/O via SSH and delete the corresponding directories manually. Run the following command: `sudo rm -rf /data/.extensions/replace_this_string_with_the_extension_you_want_to_delete`, where `replace_this_string_with_the_extension_you_want_to_delete` should be replaced with the name(s) of the Extension(s) you want to delete (one command per Extension). Be aware that any related configurations (e.g., a Docker volume associated with the Extension) may also need to be removed.
-- **Downgrade the CORE I/O to 4.0.2**: Downgrade the CORE I/O to 4.0.2, delete the affected Extensions, then upgrade the CORE I/O to the desired version.
+The name of the spx file represents the name of the extension.
 
 ##### Manifest file
 
@@ -185,7 +170,6 @@ The `manifest.json` file is the Extension parameterization file with the followi
 - icon: Name of the file included in the extension that should be used as the icon for the extension
 - udev_rules: Name of the udev file included in the extension that contains the updated udev rules to install in host OS
 - images: Optional list of tgz file names included in the extension that represent the docker images to load for running the extension. Parameter is omitted if the images are available from a public location, such as dockerhub.
-- extension_name: Name of the extension, subject to the restrictions in [Extension Structure](#extension-structure)
 
 ##### Docker Images
 
@@ -193,23 +177,14 @@ The docker images listed in the `images` field of the `manifest.json` file also 
 
 ##### Docker Compose YAML configuration file
 
-The `docker-compose.yml` file contains instructions for managing the docker images in the Extension. The “docker-compose” tool is an industry standard to support the management of multiple pieces of software packaged together. If no logging driver is specified in the `docker-compose.yml` file, the Extension uses the `journald` logging driver as of 4.1.0.
-
-##### Docker Logs
-
-As of 4.1.0, the `journald` logging driver is supported for Extensions. Its usage is strongly recommended because it enables developers to retrieve logs for containers that are no longer running. If the CORE I/O has not been power cycled, logs for an individual run of a container may be retrieved by:
-
-- Executing `docker events`, and noting the full Docker container ID(s) of interest
-- For each ID, executing `journalctl CONTAINER_ID_FULL={ID} -u docker.service --until now`, where `{ID}` is the full Docker container ID from the previous step
-
-If the CORE I/O has been power cycled, logs may be retrieved by executing `journalctl -u docker.service --until now`.
+The `docker-compose.yml` file contains instructions for managing the docker images in the Extension. The “docker-compose” tool is an industry standard to support the management of multiple pieces of software packaged together.
 
 ##### Other files
 
 Extensions can also include the following files:
 
 - Icon file: Optional image file with the icon to show for the extension in the UI. The icon filename is specified in the `icon` field in the `manifest.json` file. If omitted, a generic icon will be used for the extension.
-- Udev rules file: Optional file with udev rules to copy to host OS /etc/udev/rules.d in order to support devices connected to Spot platform as a requirement to run the Extension. The udev filename is specified in the `udev_rules` field in the `manifest.json` file. Udev rules are ignored in Extensions installations in Orbit.
+- Udev rules file: Optional file with udev rules to copy to host OS /etc/udev/rules.d in order to support devices connected to Spot platform as a requirement to run the Extension. The udev filename is specified in the `udev_rules` field in the `manifest.json` file. Udev rules are ignored in Extensions installations in Scout.
 - Any other files needed to run the extension: The creators of the Spot Extensions can include any other files in the extension bundle that is necessary for the software applications in the extension to run.
 
 #### Extension Management
@@ -305,7 +280,7 @@ To uninstall and remove an extension, click the “Trash Bin” icon for the Ext
 
 ### Command-line Configuration
 
-Users can also manage their applications manually on the CORE I/O, or other compute payloads, by ssh-ing into it (`ssh -p 20022 192.168.80.3` from the robot's WiFi) and starting their applications using the options described below. The Extensions functionality included in CORE I/O and Orbit platforms simplify the process of managing applications on these platforms, but users can also use the instructions below for debugging and testing purposes.
+Users can also manage their applications manually on the CORE I/O, or other compute payloads, by ssh-ing into it (`ssh -p 20022 192.168.80.3` from the robot's WiFi) and starting their applications using the options described below. The Extensions functionality included in CORE I/O and Scout platforms simplify the process of managing applications on these platforms, but users can also use the instructions below for debugging and testing purposes.
 
 #### Run Application(s) Directly on Compute Payload
 

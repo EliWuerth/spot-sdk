@@ -5,6 +5,8 @@
 # Development Kit License (20191101-BDSDK-SL).
 
 """Test the client to the mission service."""
+import concurrent
+import sys
 import time
 from unittest import mock
 

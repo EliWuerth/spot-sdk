@@ -7,7 +7,6 @@
 syntax = "proto3";
 
 package bosdyn.api.spot_cam;
-option go_package = "bosdyn/api/spot_cam/logging";
 
 option java_outer_classname = "LoggingProto";
 
@@ -21,9 +20,7 @@ import "google/protobuf/timestamp.proto";
 // A representation of a stored data acquisition.
 message Logpoint {
     // Possible types of media that can be stored.
-    enum RecordType {
-        STILLIMAGE = 0;
-    }
+    enum RecordType { STILLIMAGE = 0; }
     // Possible stages of data acquisition.
     enum LogStatus {
         FAILED = 0;

@@ -4,6 +4,7 @@
 # is subject to the terms and conditions of the Boston Dynamics Software
 # Development Kit License (20191101-BDSDK-SL).
 
+import argparse
 import datetime
 import logging
 import threading
@@ -131,7 +132,9 @@ class MetricManager:
                 if len(signedProtoList) > 1:
                     _LOGGER.info("ERROR: Protolist is too large.")
 
-                # Write that data to the core using the Metric File Group class
+
+                # Write that that data to the core using the Metric File Group class
+
                 metricFileGroup.write_metric_to_core(sequenceNumber, signedProtoList[0])
 
                 # Increment our counter

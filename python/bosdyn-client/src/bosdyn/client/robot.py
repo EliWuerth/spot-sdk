@@ -129,7 +129,6 @@ class Robot(object):
         self.cert = None
         self.lease_wallet = LeaseWallet()
         self._time_sync_thread = None
-        self.executor = None
 
         # Set default max message length for sending and receiving. These values are used when
         # creating channels.
@@ -199,7 +198,6 @@ class Robot(object):
         self.max_receive_message_length = other.max_receive_message_length
         self.client_name = other.client_name
         self.lease_wallet.set_client_name(self.client_name)
-        self.executor = other.executor
 
     def ensure_client(self, service_name, channel=None, options=[], service_endpoint=None):
         """Ensure a Client for a given service.
@@ -249,7 +247,7 @@ class Robot(object):
         for channel_from_auth in self.channels_by_authority.values():
             channel_from_auth.close()
 
-    def get_cached_robot_id(self, timeout=None):
+    def get_cached_robot_id(self):
         """Return the RobotId proto for this robot, querying it from the robot if not yet cached.
 
         Raises:
@@ -257,10 +255,10 @@ class Robot(object):
         """
         if not self._robot_id:
             robot_id_client = self.ensure_client('robot-id')
-            self._robot_id = robot_id_client.get_id(timeout=timeout)
+            self._robot_id = robot_id_client.get_id()
         return self._robot_id
 
-    def get_cached_hardware_hardware_configuration(self, timeout=None):
+    def get_cached_hardware_hardware_configuration(self):
         """Return the HardwareConfiguration proto for this robot, querying it from the robot if not
         yet cached.
 
@@ -269,7 +267,7 @@ class Robot(object):
         """
         if not self._hardware_config:
             client = self.ensure_client(RobotStateClient.default_service_name)
-            self._hardware_config = client.get_robot_hardware_configuration(timeout=timeout)
+            self._hardware_config = client.get_robot_hardware_configuration()
         return self._hardware_config
 
 
@@ -413,6 +411,7 @@ class Robot(object):
                     self.logger.warning(
                         'Payload is not authorized. Authentication will block until an'
                         ' operator authorizes the payload in the Admin Console.')
+                pass
             time.sleep(0.1)
         self.update_user_token(user_token)
 

@@ -6,6 +6,7 @@
 
 """Reads GPS data from a tcp/udp stream, and sends to aggregator service."""
 
+import logging
 import signal
 import socket
 import time
@@ -39,7 +40,7 @@ class NMEAStreamReader(object):
         try:
             raw_data = self.stream.readline()
             # If the rawdata is a bytes or bytearray object, decode it into a string.
-            if not isinstance(raw_data, str):
+            if type(raw_data) is not str:
                 raw_data = str(raw_data, "utf-8")
         except UnicodeDecodeError:
             # Throttle the logs.
@@ -158,3 +159,4 @@ class GpsListener:
 
         except KeyboardInterrupt:
             print()  # Get past the ^C in the console output
+            pass

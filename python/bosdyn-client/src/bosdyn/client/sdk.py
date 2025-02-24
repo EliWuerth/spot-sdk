@@ -202,9 +202,6 @@ class Sdk(object):
         self.max_send_message_length = DEFAULT_MAX_MESSAGE_LENGTH
         self.max_receive_message_length = DEFAULT_MAX_MESSAGE_LENGTH
 
-        # ThreadPoolExecutor instance for asynchronous streaming calls.
-        self.executor = None
-
 
     def create_robot(
             self,

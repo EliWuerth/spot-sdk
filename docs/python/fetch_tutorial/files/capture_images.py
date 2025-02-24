@@ -5,23 +5,19 @@
 # Development Kit License (20191101-BDSDK-SL).
 
 import argparse
-import os
 import sys
-import time
-
-import cv2
-import numpy as np
-
+import os
 import bosdyn.client
 import bosdyn.client.util
 from bosdyn.client.image import ImageClient
-
+import cv2
+import numpy as np
+import time
 
 def main(argv):
     parser = argparse.ArgumentParser()
     bosdyn.client.util.add_base_arguments(parser)
-    parser.add_argument('--image-source', help='Get image from source(s)',
-                        default='frontleft_fisheye_image')
+    parser.add_argument('--image-source', help='Get image from source(s)', default='frontleft_fisheye_image')
     parser.add_argument('--folder', help='Path to write images to', default='')
     options = parser.parse_args(argv)
 
@@ -61,9 +57,7 @@ def main(argv):
 
         # Don't overwrite an existing image
         while True:
-            image_saved_path = os.path.join(
-                options.folder,
-                image_responses[0].source.name + '_{:0>4d}'.format(counter) + '.jpg')
+            image_saved_path = os.path.join(options.folder, image_responses[0].source.name + '_{:0>4d}'.format(counter) + '.jpg')
             counter += 1
 
             if not os.path.exists(image_saved_path):
@@ -76,8 +70,8 @@ def main(argv):
         # Wait for some time so we can drive the robot to a new position.
         time.sleep(0.7)
 
-    return True
 
+    return True
 
 if __name__ == "__main__":
     if not main(sys.argv[1:]):

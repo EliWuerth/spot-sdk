@@ -11,3 +11,4 @@ import bosdyn.client.command_line
 
 def test_null():
     """This at least confirms that all the modules listed above load successfully."""
+    pass

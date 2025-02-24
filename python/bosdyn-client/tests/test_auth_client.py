@@ -5,6 +5,7 @@
 # Development Kit License (20191101-BDSDK-SL).
 
 """Unit tests for the auth module."""
+import logging
 import time
 
 import grpc

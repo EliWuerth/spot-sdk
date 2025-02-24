@@ -494,8 +494,7 @@ class ScoutClient():
             Returns:
                 requests.Response: the response associated with the post request
         """
-        return self.post_resource(f'site_walks/export_as_walk',
-                                  json={"siteWalkUuid": site_walk_uuid}, **kwargs)
+        return self.post_resource(f'site_walks/export_as_walk/{site_walk_uuid}', **kwargs)
 
     def post_import_from_walk(self, **kwargs) -> requests.Response:
         """ Given a walk data, imports it to the specified scout instance
@@ -732,7 +731,7 @@ class ScoutClient():
 
     def post_dispatch_mission_to_robot(self, robot_nickname: str, driver_id: str, mission_uuid: str,
                                        delete_mission: bool, force_acquire_estop: bool,
-                                       skip_initialization: bool, **kwargs) -> requests.Response:
+                                       **kwargs) -> requests.Response:
         """ Dispatch the robot to a mission given a mission uuid
 
             Args:
@@ -741,11 +740,10 @@ class ScoutClient():
                 mission_uuid: uuid of the mission(also known as Site Walk) to dispatch
                 delete_mission: whether to delete the mission after playback
                 force_acquire_estop: whether to force acquire E-stop from the previous client
-                skip_initialization: whether to skip initialization when starting the return to dock mission
                 kwargs(**): a variable number of keyword arguments for the post request
             Raises:
                 RequestExceptions: exceptions thrown by the Requests library
-                UnauthenticatedClientError:  indicates that the client is not authenticated properly
+                UnauthenticatedScoutClientError:  indicates that the scout client is not authenticated properly
             Returns:
                 requests.Response: the response associated with the post request
         """
@@ -770,11 +768,10 @@ class ScoutClient():
                 "missionId": mission_uuid,
                 "forceAcquireEstop": force_acquire_estop,
                 "deleteMission": delete_mission,
-                "requireDocked": False,
-                "skipInitialization": skip_initialization
+                "requireDocked": False
             },
             "eventMetadata": {
-                "name": "API Triggered Mission"
+                "name": "Scout API Triggered Mission"
             }
         }
         return self.post_resource(
@@ -851,7 +848,7 @@ def create_scout_client(options: 'argparse.Namespace') -> 'bosdyn.scout.client.S
         verify = options.verify == "True"
     else:
         print(
-            "The provided value for the argument verify [{}] is not either 'True' or 'False'. Assuming verify is set to 'path/to/CA bundle'"
+            "The provided value for the argument verify [%s] is not either 'True' or 'False'. Assuming verify is set to 'path/to/CA bundle'"
             .format(options.verify))
         verify = options.verify
 

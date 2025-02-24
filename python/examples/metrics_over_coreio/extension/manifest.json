@@ -1,6 +1,5 @@
 {
   "description": "Upload metrics via coreio",
   "version": "0.1",
-  "images": ["metrics_over_coreio.tar.gz"],
-  "extension_name": "metrics_over_modem"
+  "images": ["metrics_over_coreio.tar.gz"]
 }

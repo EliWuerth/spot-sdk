@@ -76,6 +76,7 @@ class CameraInterface(ABC):
             A tuple with image data (in any format), and the capture timestamp in seconds (float) in the
             service computer's clock.
         """
+        pass
 
     @abstractmethod
     def image_decode(self, image_data, image_proto, image_req):
@@ -91,6 +92,7 @@ class CameraInterface(ABC):
             pixel format, image format, and potentially the transform snapshot fields within the image_proto
             protobuf message.
         """
+        pass
 
 
 class VisualImageSource():
@@ -573,7 +575,7 @@ class ImageCaptureThread():
 
     def _do_image_capture(self):
         """Main loop for the image capture thread, which requests and saves images."""
-        while not self.stop_capturing_event.is_set():
+        while not self.stop_capturing_event.isSet():
             # Get the image by calling the blocking capture function.
             start_time = time.time()
             capture, capture_time = self.capture_function()
